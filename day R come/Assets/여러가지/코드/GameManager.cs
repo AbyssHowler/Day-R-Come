@@ -16,37 +16,34 @@ public class GameManager : MonoBehaviourPunCallbacks
     public Text mainText;
     public bool Started= false;
     public GameObject gameover;
-
+     public Timer timer;
 
     void Start()
     {
-       
+        timer=GameObject.Find("Timer").GetComponent<Timer>();
         mainText = GameObject.Find("mainText").GetComponent<Text>();
         StartCoroutine(CreatePlayer());
 
-        /*if (PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsMasterClient)
         {
             masterButton.gameObject.SetActive(true);
         }
         else
         {
             masterButton.gameObject.SetActive(false);
-        }*/
+        }
     }
     void Update(){
         // "Player" 태그를 가진 모든 오브젝트를 배열로 가져옴
-        // StartCoroutine(delaygameover());
+         StartCoroutine(delaygameover());
     }
 
     public void Leave()
     {
         PhotonNetwork.LeaveRoom();
-    
+        SceneManager.LoadScene("Lobby");
     }
-    public override void OnLeftRoom()
-    {
-        SceneManager.LoadScene("Lobby"); // 로비 씬 이름으로 변경
-    }
+
     public void Startrandom()
     {
         Started=true;
@@ -117,7 +114,7 @@ void SendRandomPlayerMessage(Photon.Realtime.Player player, string message)
     {
         yield return new WaitForSeconds(duration);
 
-     
+       timer.enabled=true;
 
         //1분 30초 버티면 플레이어 승 못버팀 술래승 그 뭐냐 타이머 실행하기 여따
     }
@@ -135,6 +132,7 @@ void SendRandomPlayerMessage(Photon.Realtime.Player player, string message)
     }
     [PunRPC]
     void monsterwin(){
+        timer.enabled=false;
         mainText.text = "생존자들이 모두 잡혔습니다... \n몬스터 승리!";
         gameover.SetActive(true);
         
